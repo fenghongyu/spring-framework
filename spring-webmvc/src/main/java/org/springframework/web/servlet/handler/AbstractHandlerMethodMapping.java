@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -304,6 +305,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	/**
 	 * Look up a handler method for the given request.
+	 * 找到给定请求的处理方法
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
