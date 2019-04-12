@@ -86,9 +86,11 @@ public class XmlValidationModeDetector {
 	 * @throws IOException in case of I/O failure
 	 * @see #VALIDATION_DTD
 	 * @see #VALIDATION_XSD
+	 * 校验inputStream 的模式
 	 */
 	public int detectValidationMode(InputStream inputStream) throws IOException {
 		// Peek into the file to look for DOCTYPE.
+		//查看文件去找DOCTYPE，按行读取文件，找到含 DOCTYPE 则->DTD，否则XSD，出现异常，则返回继续猜测的标识
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
 			boolean isDtdValidated = false;
