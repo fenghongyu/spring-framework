@@ -18,12 +18,11 @@ package org.springframework.beans.factory.xml;
 
 import java.io.IOException;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * {@link EntityResolver} implementation that delegates to a {@link BeansDtdResolver}
@@ -57,6 +56,7 @@ public class DelegatingEntityResolver implements EntityResolver {
 	 * {@link ClassLoader}.
 	 * @param classLoader the ClassLoader to use for loading
 	 * (can be {@code null}) to use the default ClassLoader)
+	 *                   构造默认的俩种解析器
 	 */
 	public DelegatingEntityResolver(@Nullable ClassLoader classLoader) {
 		this.dtdResolver = new BeansDtdResolver();
@@ -77,14 +77,20 @@ public class DelegatingEntityResolver implements EntityResolver {
 	}
 
 
+	//publicId：null
+	//systemId：http://www.springframework.org/schema/beans/spring-beans.xsd
+	//publicId：-//SPRING//DTD BEAN 2.0//EN
+	//systemId：http://www.springframework.org/dtd/spring-beans.dtd
 	@Override
 	@Nullable
 	public InputSource resolveEntity(String publicId, @Nullable String systemId) throws SAXException, IOException {
 		if (systemId != null) {
 			if (systemId.endsWith(DTD_SUFFIX)) {
+				//.dtd
 				return this.dtdResolver.resolveEntity(publicId, systemId);
 			}
 			else if (systemId.endsWith(XSD_SUFFIX)) {
+				//.xsd
 				return this.schemaResolver.resolveEntity(publicId, systemId);
 			}
 		}

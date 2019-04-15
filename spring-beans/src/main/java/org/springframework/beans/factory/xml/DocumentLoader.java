@@ -27,13 +27,14 @@ import org.xml.sax.InputSource;
  * @author Rob Harrop
  * @since 2.0
  * @see DefaultDocumentLoader
+ * 将加载的资源文件，转换为Document
  */
 public interface DocumentLoader {
 
 	/**
 	 * Load a {@link Document document} from the supplied {@link InputSource source}.
 	 * @param inputSource the source of the document that is to be loaded
-	 * @param entityResolver the resolver that is to be used to resolve any entities
+	 * @param entityResolver the resolver that is to be used to resolve any entities  解析文件的解析器
 	 * @param errorHandler used to report any errors during document loading
 	 * @param validationMode the type of validation
 	 * {@link org.springframework.util.xml.XmlValidationModeDetector#VALIDATION_DTD DTD}
