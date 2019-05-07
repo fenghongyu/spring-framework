@@ -199,16 +199,19 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	//对常见的几个默认元素进行解析
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
+			//import 节点引入解析
 			importBeanDefinitionResource(ele);
 		}
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
+			//解析元素的别名并注册
 			processAliasRegistration(ele);
 		}
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+			//处理给定的bean 元素，解析bean定义，并在注册表中注册。
 			processBeanDefinition(ele, delegate);
 		}
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
-			// recurse
+			// 根据给定的根元素，对每个bean元素进行注册
 			doRegisterBeanDefinitions(ele);
 		}
 	}

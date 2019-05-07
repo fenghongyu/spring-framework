@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.inject.Provider;
 
 import org.springframework.beans.BeanUtils;
@@ -83,6 +84,7 @@ import org.springframework.util.StringUtils;
  * {@link org.springframework.beans.factory.ListableBeanFactory} and
  * {@link BeanDefinitionRegistry} interfaces: a full-fledged bean factory
  * based on bean definition objects.
+ * 一个成熟的bean工厂，用来定义bean对象。
  *
  * <p>Typical usage is registering all bean definitions first (possibly read
  * from a bean definition file), before accessing beans. Bean definition lookup
@@ -111,6 +113,7 @@ import org.springframework.util.StringUtils;
  * @see StaticListableBeanFactory
  * @see PropertiesBeanDefinitionReader
  * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
+ * 默认的bean 工厂
  */
 @SuppressWarnings("serial")
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory
@@ -168,9 +171,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
 	/** List of names of manually registered singletons, in registration order */
+	//按顺序注册手动注册的单例
 	private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
 
 	/** Cached array of bean definition names in case of frozen configuration */
+	//冻结配置环境后缓存的bean 定义的名称
 	@Nullable
 	private volatile String[] frozenBeanDefinitionNames;
 
@@ -794,6 +799,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
+				//验证bean
 				((AbstractBeanDefinition) beanDefinition).validate();
 			}
 			catch (BeanDefinitionValidationException ex) {
@@ -803,9 +809,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		BeanDefinition oldBeanDefinition;
-
+		//从缓存中获取bean
 		oldBeanDefinition = this.beanDefinitionMap.get(beanName);
 		if (oldBeanDefinition != null) {
+			//已存在的bean
+			//校验是否允许注册一个相同名字的bean，如果不允许，则抛出异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
 						"Cannot register bean definition [" + beanDefinition + "] for bean '" + beanName +
@@ -819,6 +827,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							oldBeanDefinition + "] with [" + beanDefinition + "]");
 				}
 			}
+			//新的和旧的bean不一致，则覆写旧的，要记录日志
 			else if (!beanDefinition.equals(oldBeanDefinition)) {
 				if (this.logger.isInfoEnabled()) {
 					this.logger.info("Overriding bean definition for bean '" + beanName +
@@ -833,11 +842,15 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			//允许覆盖，则直接覆盖，放入map容器中，以map，达到覆写
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
+//			检测创建 Bean 阶段是否已经开启，如果开启了则需要对 beanDefinitionMap 进行并发控制
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
+				// 无法再修改启动时集合元素（用于稳定迭代），不知道啥含义
+				//全局变量，加锁
 				synchronized (this.beanDefinitionMap) {
 					this.beanDefinitionMap.put(beanName, beanDefinition);
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
@@ -853,6 +866,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			else {
 				// Still in startup registration phase
+				//仍在启动注册阶段
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				this.manualSingletonNames.remove(beanName);
@@ -861,6 +875,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		if (oldBeanDefinition != null || containsSingleton(beanName)) {
+			//已存在的bean 或者是单例bean，重置缓存。
 			resetBeanDefinition(beanName);
 		}
 	}
@@ -897,6 +912,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/**
 	 * Reset all bean definition caches for the given bean,
 	 * including the caches of beans that are derived from it.
+	 * 对于给定的bean，重置bean 的缓存，包括这个bean 派生出的bean对应的缓存
 	 * @param beanName the name of the bean to reset
 	 */
 	protected void resetBeanDefinition(String beanName) {
