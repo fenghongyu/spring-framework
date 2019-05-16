@@ -16,14 +16,6 @@
 
 package org.springframework.test.web.servlet;
 
-import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockAsyncContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -39,6 +31,14 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+
 /**
  * A sub-class of {@code DispatcherServlet} that saves the result in an
  * {@link MvcResult}. The {@code MvcResult} instance is expected to be available
@@ -50,6 +50,7 @@ import org.springframework.web.util.WebUtils;
  */
 @SuppressWarnings("serial")
 final class TestDispatcherServlet extends DispatcherServlet {
+
 
 	private static final String KEY = TestDispatcherServlet.class.getName() + ".interceptor";
 
