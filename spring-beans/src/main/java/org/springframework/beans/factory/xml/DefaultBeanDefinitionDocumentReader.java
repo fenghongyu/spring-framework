@@ -16,11 +16,6 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -37,6 +32,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Default implementation of the {@link BeanDefinitionDocumentReader} interface that
@@ -94,7 +94,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		this.readerContext = readerContext;
 		logger.debug("Loading bean definitions");
 		Element root = doc.getDocumentElement();
-		//根据doc 的元素 注册bean的核心逻辑
+		//根据doc 的元素 解析bean的核心逻辑
 		doRegisterBeanDefinitions(root);
 	}
 
@@ -118,7 +118,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Register each bean definition within the given root {@code <beans/>} element.
-	 * 根据给定的根元素，对每个bean元素进行注册
+	 * 根据给定的根元素，对每个bean元素进行解析
 	 */
 	protected void doRegisterBeanDefinitions(Element root) {
 		// Any nested <beans> elements will cause recursion in this method. In
@@ -136,7 +136,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
 						profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
-				//对profiles进行检测，如果都无效，则不进行bean的注册
+				//对profiles进行检测，如果都无效，则不进行bean的解析
 				if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
 					if (logger.isInfoEnabled()) {
 						logger.info("Skipped XML bean definition file due to specified profiles [" + profileSpec +
@@ -203,15 +203,16 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			importBeanDefinitionResource(ele);
 		}
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
-			//解析元素的别名并注册
+			//解析元素的别名
 			processAliasRegistration(ele);
 		}
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
-			//处理给定的bean 元素，解析bean定义，并在注册表中注册。
+			//处理给定的bean 元素，解析bean定义
 			processBeanDefinition(ele, delegate);
 		}
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
-			// 根据给定的根元素，对每个bean元素进行注册
+			// 根据给定的根元素，对每个bean元素进行解析
+			//如果是beans 节点，则递归解析
 			doRegisterBeanDefinitions(ele);
 		}
 	}
